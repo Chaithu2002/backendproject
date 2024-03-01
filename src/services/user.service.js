@@ -12,3 +12,14 @@ export const register = async (body) => {
   }
 
 };
+
+// login user validation
+export const login = async (body) => {
+  const userPresent = await User.find({email:body.email,password:body.password});
+  console.log(userPresent);
+  if(userPresent.length>0){
+    return userPresent;
+  }else{
+    throw new Error("User has not registered, please register first");
+  }
+};
