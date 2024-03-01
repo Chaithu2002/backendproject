@@ -1,4 +1,5 @@
 import User from '../models/user.model';
+import bcrypt from 'bcrypt';
 
 // user registration validation
 export const register = async (body) => {
@@ -15,11 +16,15 @@ export const register = async (body) => {
 
 // login user validation
 export const login = async (body) => {
-  const userPresent = await User.find({email:body.email,password:body.password});
-  console.log(userPresent);
+  const userPresent = await User.find({email:body.email}); //outputs an array with user data
   if(userPresent.length>0){
+    const validPassword = await bcrypt.compare(body.password,userPresent[0].password); // comparing user password with encrypted password
+    if(validPassword === false){
+      throw new Error("please enter correct password");
+    }
     return userPresent;
   }else{
     throw new Error("User has not registered, please register first");
   }
 };
+
