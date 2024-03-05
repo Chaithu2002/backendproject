@@ -1,14 +1,15 @@
 import User from '../models/user.model';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 // user registration validation
 export const register = async (body) => {
   const data = await User.find({email:body.email});
-  console.log(data);
+  // console.log(data);
   if(data.length>0){
     throw new Error("EmailId is already registered, use another EmailID");
   }else{
-    const data = await User.create(body);
+    const data = await User.create(body); 
     return data;
   }
 
@@ -22,7 +23,8 @@ export const login = async (body) => {
     if(validPassword === false){
       throw new Error("please enter correct password");
     }
-    return userPresent;
+    const secret = process.env.SECRET_KEY;
+    return jwt.sign({userId:userPresent[0]._id},secret);
   }else{
     throw new Error("User has not registered, please register first");
   }
